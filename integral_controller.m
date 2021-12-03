@@ -1,8 +1,3 @@
-% First do system states
-% Grab the integral code -> that'll be what Kevin uses
-% Modify the integral code for the observer
-% Use observer with LQR
-
 close all; clear all; clc;
 
 n = sqrt(398600 / 6778^3 );
@@ -32,7 +27,7 @@ OLsys = ss(A,B,C,D);
 umax = 1;
 tvec = 0:0.01:60;
 rhistvec = zeros(3, length(tvec));
-rhistvec(1,:) = sign(double(tvec > 1 & tvec < 30)) % Set reference input to 1 from t=1 to t=30
+rhistvec(1,:) = sign(double(tvec > 1 & tvec < 30)); % Set reference input to 1 from t=1 to t=30
 
 
 %% Set up Integral Control
