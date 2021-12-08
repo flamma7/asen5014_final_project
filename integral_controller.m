@@ -31,8 +31,9 @@ rhistvec(1,:) = sign(double(tvec > 1 & tvec < 30)); % Set reference input to 1 f
 
 
 %% Set up Integral Control
-despoles = -[1 2 3 4 5 6 7 8 9];
-
+for i=0:10:10
+%despoles = -[10 8 7 4 5 1.2 3.3 4.5 .5];
+despoles = -[9 8 7 6 5 4 6.1 4.5 .5];
 Aaug = [A zeros(6,3); -C zeros(3,3)]; 
 Baug = [B; 
         zeros(size(C,1),size(B,2))];
@@ -126,3 +127,5 @@ plot(tvec, X_CL(6,:),'r')
 xlabel('t (secs)') 
 ylabel('$\dot{z}$ [km/s]', 'Interpreter', 'latex') 
 title('$\dot{z}$ (cross-track) vs time', 'Interpreter', 'latex')
+
+end
