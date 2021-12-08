@@ -64,8 +64,8 @@ rhistvec(1,:) = sign(double(tvec > 1 & tvec < 30)); % Set reference input to 1 f
 
 
 %% Set up Integral Control
-for i=0:10:10
-%despoles = -[10 8 7 4 5 1.2 3.3 4.5 .5];
+for i=1:1:1
+%despoles(i,:) = -[rand*10, rand*8, rand*7, rand*6, rand*5, rand*4, rand*6, rand*4, .75];
 despoles = -[9 8 7 6 5 4 6.1 4.5 .5];
 Aaug = [A zeros(6,3); -C zeros(3,3)]; 
 Baug = [B; 
@@ -77,7 +77,7 @@ Daug = zeros(size(Caug,1),size(Baug,2));
 
 %%Assess reachability: 
 rank(ctrb(Aaug,Baug)) %should be = 9
-Kaug = place(Aaug,Baug,despoles); 
+Kaug = place(Aaug,Baug,despoles(1,:)); 
 AaugCL = Aaug - Baug*Kaug; 
 BaugCL = Faug; 
 CLaugsys2 = ss(AaugCL,BaugCL,Caug,Daug); 
@@ -123,26 +123,42 @@ figure()
 % X plots
 subplot(321), hold on
 plot(tvec, X_CL(1,:),'r') 
+xline(1)
+xline(11)
+xline(30)
+xline(40)
 xlabel('t (secs)') 
 ylabel('x [km]') 
 title('x (radial) vs time') 
 
 subplot(322), hold on
 plot(tvec, X_CL(4,:),'r') 
+xline(1)
+xline(11)
+xline(30)
+xline(40)
 xlabel('t (secs)') 
 ylabel('$\dot{x}$ [km/s]', 'Interpreter', 'latex') 
 title('$\dot{x}$ (radial) vs time', 'Interpreter', 'latex')
-
+legend('States','10 Second Timing Objective')
 
 % Y plots
 subplot(323), hold on
 plot(tvec, X_CL(2,:),'r') 
+xline(1)
+xline(11)
+xline(30)
+xline(40)
 xlabel('t (secs)') 
 ylabel('y [km]') 
 title('y (along-track) vs time')
 
 subplot(324), hold on
 plot(tvec, X_CL(5,:),'r') 
+xline(1)
+xline(11)
+xline(30)
+xline(40)
 xlabel('t (secs)') 
 ylabel('$\dot{y}$ [km/s]', 'Interpreter', 'latex') 
 title('$\dot{y}$ (along-track) vs time', 'Interpreter', 'latex')
@@ -151,12 +167,20 @@ title('$\dot{y}$ (along-track) vs time', 'Interpreter', 'latex')
 % Z plots
 subplot(325), hold on
 plot(tvec, X_CL(3,:),'r') 
+xline(1)
+xline(11)
+xline(30)
+xline(40)
 xlabel('t (secs)') 
 ylabel('z [km]') 
-title('z (cross-track) vs time')
+title('z (cross-track) vs time','FontWeight','Bold')
 
 subplot(326), hold on
 plot(tvec, X_CL(6,:),'r') 
+xline(1)
+xline(11)
+xline(30)
+xline(40)
 xlabel('t (secs)') 
 ylabel('$\dot{z}$ [km/s]', 'Interpreter', 'latex') 
 title('$\dot{z}$ (cross-track) vs time', 'Interpreter', 'latex')
