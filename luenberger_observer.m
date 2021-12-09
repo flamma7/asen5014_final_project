@@ -43,6 +43,8 @@ Daug = zeros(size(Caug,1),size(Baug,2));
 rank(ctrb(Aaug,Baug)) %should be = 9
 
 % Set poles for K and L seperately
+% despoles_K =-[9 8 7 6 5 4 6.1 4.5 .5]; %untuned
+% despoles_L = -[1 2 3 4 5 6]; %untuned
 despoles_K = -[1 2 3 4 5 6 7 8 9]*0.2;
 despoles_L = -[1 2 3 4 5 6]*0.2;
 
@@ -57,8 +59,9 @@ DaugCLO = zeros(size(CaugCLO,1),size(BaugCLO,2));
 
 CLaugsys2 = ss(AaugCLO,BaugCLO,CaugCLO,DaugCLO); 
 
-%XCLO_IC = 0*ones(15,1); %zero initial error
-XCLO_IC = 0.1*ones(15,1); %non-zero initial error
+XCLO_IC = 0*ones(15,1); %zero initial error
+% XCLO_IC = 0.1*zeros(15,1); %non-zero initial error
+% XCLO_IC(10:15) = 0.1; %non-zero initial error
 
 %% Step 5. Check that closed-loop system specs met; change despoles o'wise
 %%get response to first reference input profile:
@@ -101,26 +104,43 @@ figure()
 % X plots
 subplot(321), hold on
 plot(tvec, X_CL(1,:),'r') 
+xline(1)
+xline(11)
+xline(30)
+xline(40)
 xlabel('t (secs)') 
 ylabel('x [km]') 
 title('x (radial) vs time') 
 
 subplot(322), hold on
 plot(tvec, X_CL(4,:),'r') 
+xline(1)
+xline(11)
+xline(30)
+xline(40)
 xlabel('t (secs)') 
 ylabel('$\dot{x}$ [km/s]', 'Interpreter', 'latex') 
 title('$\dot{x}$ (radial) vs time', 'Interpreter', 'latex')
+legend('States','10 Second Timing Objective')
 
 
 % Y plots
 subplot(323), hold on
 plot(tvec, X_CL(2,:),'r') 
+xline(1)
+xline(11)
+xline(30)
+xline(40)
 xlabel('t (secs)') 
 ylabel('y [km]') 
 title('y (along-track) vs time')
 
 subplot(324), hold on
 plot(tvec, X_CL(5,:),'r') 
+xline(1)
+xline(11)
+xline(30)
+xline(40)
 xlabel('t (secs)') 
 ylabel('$\dot{y}$ [km/s]', 'Interpreter', 'latex') 
 title('$\dot{y}$ (along-track) vs time', 'Interpreter', 'latex')
@@ -129,12 +149,20 @@ title('$\dot{y}$ (along-track) vs time', 'Interpreter', 'latex')
 % Z plots
 subplot(325), hold on
 plot(tvec, X_CL(3,:),'r') 
+xline(1)
+xline(11)
+xline(30)
+xline(40)
 xlabel('t (secs)') 
 ylabel('z [km]') 
 title('z (cross-track) vs time')
 
 subplot(326), hold on
-plot(tvec, X_CL(6,:),'r') 
+plot(tvec, X_CL(6,:),'r')
+xline(1)
+xline(11)
+xline(30)
+xline(40)
 xlabel('t (secs)') 
 ylabel('$\dot{z}$ [km/s]', 'Interpreter', 'latex') 
 title('$\dot{z}$ (cross-track) vs time', 'Interpreter', 'latex')
