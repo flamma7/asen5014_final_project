@@ -15,11 +15,11 @@ C(:, 1:3) = eye(3);
 D = zeros(3);
 
 P = ctrb(A,B);
-rank(P) % System is fully controllable
+rank(P); % System is fully controllable
 
 % Check controllability
 O = obsv(A,C);
-rank(O) % System is fully observable
+rank(O); % System is fully observable
 
 OLsys = ss(A,B,C,D); 
 
@@ -40,18 +40,11 @@ Caug = [C, zeros(3,3)];
 Daug = zeros(size(Caug,1),size(Baug,2));
 
 %%Assess reachability: 
-rank(ctrb(Aaug,Baug)) %should be = 9
+rank(ctrb(Aaug,Baug)); %should be = 9
 
 % Set poles for K and L seperately
 % despoles_K = -[1 2 3 4 5 6 7 8 9]*0.2;
 despoles_L = -[1 2 3 4 5 6]*0.2;
-
-%rho = 4.75;
-%awts = [65 1 65 1 40 40];
-%awts = awts./sum(awts);
-%xmax2 = [0.1^2 2 0.1^2 2 0.05^2 0.05^2]; %allowable max state deviations 
-%Qaug =  diag(awts./xmax2);
-%Raug =  rho*diag([0.5/(umax)^2 0.5/(umax)^2]);
 
 % Q is nxn
 % R is mxm
@@ -64,6 +57,7 @@ e_max = 5;
 u_max = 1;
 rho = 0.05;
 q_diag = [ai^2/pos_max, ai^2/pos_max, ai^2/pos_max, ai^2/vel_max, ai^2/vel_max, ai^2/vel_max, ai^2/e_max, ai^2/e_max, ai^2/e_max];
+q_diag(3) = 2*q_diag(3);
 r_diag = [bi^2 / u_max, bi^2/u_max, bi^2/u_max];
 Q = diag(q_diag);
 R = rho * diag(r_diag);
@@ -71,6 +65,7 @@ R = rho * diag(r_diag);
 AugOLsys = ss(Aaug,Baug,Caug,Daug); 
 
 [Kaug,Waug,clEvalsAug] = lqr(AugOLsys,Q,R);
+clEvalsAug
 
 % Kaug = place(Aaug,Baug,despoles_K); 
 L=(place(A.',C.', despoles_L)).';
@@ -81,11 +76,11 @@ BaugCLO = Faug;
 CaugCLO = [C zeros(3,9)];
 DaugCLO = zeros(size(CaugCLO,1),size(BaugCLO,2));
 
-
 CLaugsys2 = ss(AaugCLO,BaugCLO,CaugCLO,DaugCLO); 
 
 %XCLO_IC = 0*ones(15,1); %zero initial error
-XCLO_IC = 0.1*ones(15,1); %non-zero initial error
+XCLO_IC = zeros(15,1);
+%XCLO_IC(10:15,1) = 0.1; %non-zero initial error
 
 %% Step 5. Check that closed-loop system specs met; change despoles o'wise
 %%get response to first reference input profile:
@@ -97,30 +92,36 @@ X_CL = X_CL';
 figure() 
 subplot(131)
 plot(tvec, U_CL(1,:),'r') 
+ax = gca;
+ax.FontSize = 16; 
 hold on
 plot(tvec,umax*ones(size(tvec)),'k--') 
 plot(tvec,-umax*ones(size(tvec)),'k--') 
-xlabel('t (secs)') 
-% ylabel('') 
-title('x thruster vs time') 
+xlabel('t (secs)', 'FontSize', 24) 
+ylabel('Thrust (N)', 'FontSize', 24) 
+title('x thruster vs time', 'FontSize', 24) 
 
 subplot(132)
 plot(tvec, U_CL(2,:),'r') 
+ax = gca;
+ax.FontSize = 16; 
 hold on
 plot(tvec,umax*ones(size(tvec)),'k--') 
 plot(tvec,-umax*ones(size(tvec)),'k--') 
-xlabel('t (secs)') 
-% ylabel('') 
-title('y thruster vs time') 
+xlabel('t (secs)', 'FontSize', 24) 
+ylabel('Thrust (N)', 'FontSize', 24) 
+title('y thruster vs time', 'FontSize', 24) 
 
 subplot(133)
 plot(tvec, U_CL(3,:),'r') 
+ax = gca;
+ax.FontSize = 16; 
 hold on
 plot(tvec,umax*ones(size(tvec)),'k--') 
 plot(tvec,-umax*ones(size(tvec)),'k--') 
-xlabel('t (secs)') 
-% ylabel('') 
-title('z thruster vs time') 
+xlabel('t (secs)', 'FontSize', 24) 
+ylabel('Thrust (N)', 'FontSize', 24) 
+title('z thruster vs time', 'FontSize', 24) 
 
 %% PLOT STATES
 
@@ -128,40 +129,77 @@ figure()
 % X plots
 subplot(321), hold on
 plot(tvec, X_CL(1,:),'r') 
-xlabel('t (secs)') 
-ylabel('x [km]') 
-title('x (radial) vs time') 
+xline(1)
+xline(11)
+xline(30)
+xline(40)
+ax = gca;
+ax.FontSize = 16; 
+xlabel('t (secs)', 'FontSize', 24) 
+ylabel('x [km]', 'FontSize', 24) 
+title('x (radial) vs time', 'FontSize', 24) 
 
 subplot(322), hold on
 plot(tvec, X_CL(4,:),'r') 
+xline(1)
+xline(11)
+xline(30)
+xline(40)
+ax = gca;
+ax.FontSize = 16; 
 xlabel('t (secs)') 
-ylabel('$\dot{x}$ [km/s]', 'Interpreter', 'latex') 
-title('$\dot{x}$ (radial) vs time', 'Interpreter', 'latex')
+ylabel('$\dot{x}$ [km/s]', 'Interpreter', 'latex', 'FontSize', 24) 
+title('$\dot{x}$ (radial) vs time', 'Interpreter', 'latex', 'FontSize', 24)
+legend('States','10 Second Timing Objective', 'FontSize', 18)
 
 
 % Y plots
 subplot(323), hold on
 plot(tvec, X_CL(2,:),'r') 
-xlabel('t (secs)') 
-ylabel('y [km]') 
-title('y (along-track) vs time')
+xline(1)
+xline(11)
+xline(30)
+xline(40)
+ax = gca;
+ax.FontSize = 16; 
+xlabel('t (secs)', 'FontSize', 24) 
+ylabel('y [km]', 'FontSize', 24) 
+title('y (along-track) vs time', 'FontSize', 24)
 
 subplot(324), hold on
 plot(tvec, X_CL(5,:),'r') 
-xlabel('t (secs)') 
-ylabel('$\dot{y}$ [km/s]', 'Interpreter', 'latex') 
-title('$\dot{y}$ (along-track) vs time', 'Interpreter', 'latex')
+xline(1)
+xline(11)
+xline(30)
+xline(40)
+ax = gca;
+ax.FontSize = 16; 
+xlabel('t (secs)', 'FontSize', 24) 
+ylabel('$\dot{y}$ [km/s]', 'Interpreter', 'latex', 'FontSize', 24) 
+title('$\dot{y}$ (along-track) vs time', 'Interpreter', 'latex', 'FontSize', 24)
 
 
 % Z plots
 subplot(325), hold on
 plot(tvec, X_CL(3,:),'r') 
-xlabel('t (secs)') 
-ylabel('z [km]') 
-title('z (cross-track) vs time')
+xline(1)
+xline(11)
+xline(30)
+xline(40)
+ax = gca;
+ax.FontSize = 16; 
+xlabel('t (secs)', 'FontSize', 24) 
+ylabel('z [km]', 'FontSize', 24) 
+title('z (cross-track) vs time', 'FontSize', 24)
 
 subplot(326), hold on
 plot(tvec, X_CL(6,:),'r') 
-xlabel('t (secs)') 
-ylabel('$\dot{z}$ [km/s]', 'Interpreter', 'latex') 
-title('$\dot{z}$ (cross-track) vs time', 'Interpreter', 'latex')
+xline(1)
+xline(11)
+xline(30)
+xline(40)
+ax = gca;
+ax.FontSize = 16; 
+xlabel('t (secs)', 'FontSize', 24) 
+ylabel('$\dot{z}$ [km/s]', 'Interpreter', 'latex', 'FontSize', 24) 
+title('$\dot{z}$ (cross-track) vs time', 'Interpreter', 'latex', 'FontSize', 24)
