@@ -29,7 +29,7 @@ tvec = 0:0.01:60;
 rhistvec = zeros(3, length(tvec));
 rhistvec(1,:) = sign(double(tvec > 1 & tvec < 30)); % Set reference input to 1 from t=1 to t=30
 
-%% Set up Luenberger observer
+%% Set up Integral control
 Aaug = [A zeros(6,3); -C zeros(3,3)]; 
 Baug = [B; 
         zeros(size(C,1),size(B,2))];
@@ -61,15 +61,32 @@ q_diag(3) = 2*q_diag(3);
 r_diag = [bi^2 / u_max, bi^2/u_max, bi^2/u_max];
 Q = diag(q_diag);
 R = rho * diag(r_diag);
+Rtemp = diag(r_diag);
 
 AugOLsys = ss(Aaug,Baug,Caug,Daug); 
 
 [Kaug,Waug,clEvalsAug] = lqr(AugOLsys,Q,R);
+
+% PLOT THE ROOT LOCUS
+figure(), hold on
+set(gca,'Color','k')
+%%plot open loop poles
+OLpoles = eig(A);
+plot(OLpoles,'gx','LineWidth',2.5,'MarkerSize',9)
+rhovals = logspace(-6,3,1000);
+CLEvalsAug = nan(length(q_diag),length(rhovals));
+for rr=1:length(rhovals)
+    [~,~,CLEvalsAug(:,rr)] = lqr(AugOLsys,Q,rhovals(rr)*Rtemp);
+    plot(real(CLEvalsAug(:,rr)),imag(CLEvalsAug(:,rr)),'w.')
+end
+title("Root Locus of Integral Error LQR Closed Loop Poles");
+
 clEvalsAug
 
 % Kaug = place(Aaug,Baug,despoles_K); 
 L=(place(A.',C.', despoles_L)).';
 
+% Add observer
 AaugCLO = [(Aaug - Baug*Kaug) Baug*Kaug(:,1:6);
     zeros(6,9) (A-L*C)];
 BaugCLO = Faug;
